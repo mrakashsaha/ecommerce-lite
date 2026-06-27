@@ -1,5 +1,6 @@
 "use server";
 
+import { revalidatePath, revalidateTag } from 'next/cache';
 import { redirect } from 'next/navigation';
 
 const sqlite = require('better-sqlite3');
@@ -10,5 +11,6 @@ export const deleteProduct = async (productID) => {
         `DELETE FROM products WHERE products.id = ?`
     ).run(productID);
 
+    revalidateTag("revalTag");
     redirect("/");
 }

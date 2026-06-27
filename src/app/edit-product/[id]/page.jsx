@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { redirect } from 'next/navigation';
+import { revalidatePath } from 'next/cache';
 const sqlite = require('better-sqlite3');
 const db = sqlite("products.sqlite");
 
@@ -29,7 +30,8 @@ const EditProduct = async ({params}) => {
             `UPDATE products SET name = ?, price = ?, image = ? where id = ?`
         ).run(updateProduct.name, updateProduct.price, updateProduct.image.name, (await params).id);
 
-        redirect('/')
+        revalidatePath('/', 'page');
+        redirect('/');
         
     }
 

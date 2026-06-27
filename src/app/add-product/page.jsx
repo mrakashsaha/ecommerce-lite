@@ -2,6 +2,7 @@
 import React from 'react';
 import { setProduct } from '../../../database/product';
 import { redirect } from 'next/navigation';
+import { revalidatePath } from 'next/cache';
 
 
 const AddProduct = () => {
@@ -17,6 +18,8 @@ const AddProduct = () => {
         }
 
         setProduct(newProduct);
+
+        revalidatePath('/', 'page');
 
         redirect('/')
         
