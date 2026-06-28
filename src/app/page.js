@@ -1,11 +1,14 @@
 import Link from "next/link";
 import getProducts from "../../database/product";
 import ProductCard from "@/components/ProductCard";
+import { prisma } from "@/db/prisma";
 
 // export const revalidate = 5;
 
 export default async function Home() {
-  const products = getProducts();
+  const products = await prisma.product.findMany();
+
+
 
   const users = await (await fetch("https://jsonplaceholder.typicode.com/users", {next: {tags: ['revalTag']}})).json();
 

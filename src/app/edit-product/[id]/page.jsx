@@ -2,17 +2,18 @@
 import React from 'react';
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
+import { prisma } from '@/db/prisma';
 const sqlite = require('better-sqlite3');
 const db = sqlite("products.sqlite");
 
 
 const EditProduct = async ({params}) => {
 
-    console.log((await params).id);
+    const pId = parseInt((await params).id);
 
-    const [product] = db.prepare(
-        `SELECT * from products WHERE id = ?`
-    ).all((await params).id);
+    const product = await prisma.product.findUnique({
+        where: {id:pId}
+    })
 
 
 
@@ -22,13 +23,16 @@ const EditProduct = async ({params}) => {
 
         const updateProduct = {
             name: fromData.get('name'),
-            price: fromData.get('price'),
-            image: fromData.get('image')
+            price: parseInt(fromData.get('price')),
+            image: fromData.get('image').name
         }
 
-        db.prepare (
-            `UPDATE products SET name = ?, price = ?, image = ? where id = ?`
-        ).run(updateProduct.name, updateProduct.price, updateProduct.image.name, (await params).id);
+        await prisma.product.update({
+            where: {
+                id: pId,
+            },
+            data: updateProduct
+        })
 
         revalidatePath('/', 'page');
         redirect('/');

@@ -3,26 +3,71 @@ import React from 'react';
 import { setProduct } from '../../../database/product';
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
+import { prisma } from '@/db/prisma';
+import { NextResponse } from 'next/server';
 
 
 const AddProduct = () => {
 
-    const handleSubmit = async (fromData) => {
-        "use server";
-        console.log(fromData)
+    // const handleSubmit = async (fromData) => {
+    //     "use server";
+    //     console.log(fromData)
 
-        const newProduct = {
-            name: fromData.get('name'),
-            price: fromData.get('price'),
-            image: fromData.get('image')
+    //     const newProduct = {
+    //         name: fromData.get('name'),
+    //         price: fromData.get('price'),
+    //         image: fromData.get('image')
+    //     }
+
+    //     setProduct(newProduct);
+
+    //     revalidatePath('/', 'page');
+
+    //     redirect('/')
+
+    // }
+
+    const handleSubmit = async (formData) => {
+        "use server"
+
+        const productData = {
+            name: formData.get('name'),
+            price: parseFloat(formData.get('price')),
+            image: formData.get('image').name
         }
 
-        setProduct(newProduct);
+        // const productDataArr = [
+        //     {
+        //         name: "Pineapple",
+        //         price: 53.2,
+        //         image: "pineapple.jpg"
+        //     },
 
-        revalidatePath('/', 'page');
+        //     {
+        //         name: "Guava",
+        //         price: 53.2,
+        //         image: "guava.jpg"
+        //     },
 
-        redirect('/')
-        
+        //     {
+        //         name: "Barries",
+        //         price: 53.2,
+        //         image: "baries.jpg"
+        //     }
+        // ]
+        console.log(formData);
+        await prisma.product.create({
+            data: productData
+        })
+
+        // await prisma.product.createMany({
+        //     data: productDataArr
+        // })
+
+
+
+        revalidatePath("/", "page");
+        redirect("/");
     }
 
     return (
